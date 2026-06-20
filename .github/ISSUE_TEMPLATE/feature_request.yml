@@ -1,0 +1,44 @@
+name: Feature Request
+description: Suggest an idea for NexusBoosters
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a feature!
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: Describe the feature you would like to see.
+    validations:
+      required: true
+  - type: textarea
+    id: problem-solved
+    attributes:
+      label: Problem Being Solved
+      description: What problem does this feature solve? Is your feature request related to a problem?
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-behavior
+    attributes:
+      label: Proposed Behavior
+      description: How should the feature work? Include any proposed commands or config examples.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives
+      description: Describe any alternative solutions or features you've considered.
+    validations:
+      required: false
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context or screenshots about the feature request here.
+    validations:
+      required: false
