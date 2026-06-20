@@ -44,7 +44,7 @@ public class BoosterMenu implements NexusMenu {
 
         for (Booster b : plugin.getBoosterRegistry().getAllBoosters()) {
             if (showUnowned && !addedOwned.contains(b.getId())) {
-                displayBoosters.add(new id.naufal.nexusboosters.player.PlayerBoosterToken(b.getId(), b.getScope(), -1));
+                displayBoosters.add(new id.naufal.nexusboosters.player.PlayerBoosterToken(b.getId(), b.getScope(), -1, -1.0));
             }
         }
         

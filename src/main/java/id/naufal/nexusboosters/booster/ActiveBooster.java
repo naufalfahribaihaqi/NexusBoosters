@@ -6,15 +6,17 @@ public class ActiveBooster {
     private final String boosterId;
     private final UUID ownerUuid; // Nullable for global/server scope
     private final BoosterScope scope;
+    private final double multiplierOverride;
     private final long startedAt;
     private long expiresAt;
     private boolean paused;
     private int remainingSeconds;
 
-    public ActiveBooster(String boosterId, UUID ownerUuid, BoosterScope scope, long startedAt, long expiresAt) {
+    public ActiveBooster(String boosterId, UUID ownerUuid, BoosterScope scope, double multiplierOverride, long startedAt, long expiresAt) {
         this.boosterId = boosterId;
         this.ownerUuid = ownerUuid;
         this.scope = scope;
+        this.multiplierOverride = multiplierOverride;
         this.startedAt = startedAt;
         this.expiresAt = expiresAt;
         this.paused = false;
@@ -31,6 +33,10 @@ public class ActiveBooster {
 
     public BoosterScope getScope() {
         return scope;
+    }
+
+    public double getMultiplierOverride() {
+        return multiplierOverride;
     }
 
     public long getStartedAt() {

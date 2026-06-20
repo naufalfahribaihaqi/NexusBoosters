@@ -38,8 +38,19 @@ public class ConfirmActivateMenu implements NexusMenu {
         inventory.setItem(config.getInt("confirm-menu.items.cancel.slot", 15), 
                 createItem(config, "confirm-menu.items.cancel"));
         
+        id.naufal.nexusboosters.booster.Booster b = plugin.getBoosterManager().getEffectiveBooster(token);
+        String displayName = b != null ? b.getDisplayName() : token.getBoosterId();
+
+        java.util.List<String> infoLore = new java.util.ArrayList<>();
+        if (b != null) {
+            infoLore.add("&7Type: &f" + b.getScope().name());
+            infoLore.add("&7Effect: &a" + b.getMultiplier() + "x");
+            infoLore.add("&7Duration: &e" + TextUtil.formatTime(b.getDurationSeconds()));
+        }
+
         ItemStack info = new ItemBuilder(Material.PAPER)
-                .nameComponent(TextUtil.color("&b" + token.getBoosterId()))
+                .nameComponent(TextUtil.color("&b" + displayName))
+                .lore(infoLore)
                 .build();
         inventory.setItem(config.getInt("confirm-menu.items.info.slot", 13), info);
     }

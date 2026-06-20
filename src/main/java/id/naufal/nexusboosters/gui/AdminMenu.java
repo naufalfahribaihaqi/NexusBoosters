@@ -19,16 +19,27 @@ public class AdminMenu implements NexusMenu {
     public AdminMenu(NexusBoostersPlugin plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
-        this.inventory = Bukkit.createInventory(this, 27, TextUtil.color("&c&lAdmin Menu"));
 
-        inventory.setItem(11, new ItemBuilder(Material.BEACON)
-                .nameComponent(TextUtil.color("&bActive Boosters"))
-                .lore(List.of("&7View and manage all active boosters", "", "&eClick to open!"))
-                .build());
+        String title = plugin.getGuiConfig().getConfig().getString("admin-menu.title", "&8Admin Menu");
+        int size = plugin.getGuiConfig().getConfig().getInt("admin-menu.size", 27);
+        this.inventory = Bukkit.createInventory(this, size, TextUtil.color(title));
 
-        inventory.setItem(15, new ItemBuilder(Material.PLAYER_HEAD)
-                .nameComponent(TextUtil.color("&ePlayer Manager"))
-                .lore(List.of("&7View online players and their boosters", "", "&eClick to open!"))
+        setupItem("active", 11, Material.BEACON);
+        setupItem("players", 15, Material.PLAYER_HEAD);
+    }
+
+    private void setupItem(String key, int defaultSlot, Material defaultMat) {
+        String path = "admin-menu.items." + key + ".";
+        Material mat = Material.matchMaterial(plugin.getGuiConfig().getConfig().getString(path + "material", defaultMat.name()));
+        if (mat == null) mat = defaultMat;
+
+        int slot = plugin.getGuiConfig().getConfig().getInt(path + "slot", defaultSlot);
+        String name = plugin.getGuiConfig().getConfig().getString(path + "name", "&b" + key);
+        List<String> lore = plugin.getGuiConfig().getConfig().getStringList(path + "lore");
+
+        inventory.setItem(slot, new ItemBuilder(mat)
+                .nameComponent(TextUtil.color(name))
+                .lore(lore)
                 .build());
     }
 
@@ -40,9 +51,9 @@ public class AdminMenu implements NexusMenu {
     @Override
     public void onClick(InventoryClickEvent event) {
         int slot = event.getSlot();
-        if (slot == 11) {
+        if (slot == plugin.getGuiConfig().getConfig().getInt("admin-menu.items.active.slot", 11)) {
             plugin.getGuiService().openAdminActiveMenu(player, 0);
-        } else if (slot == 15) {
+        } else if (slot == plugin.getGuiConfig().getConfig().getInt("admin-menu.items.players.slot", 15)) {
             plugin.getGuiService().openAdminPlayerListMenu(player, 0);
         }
     }

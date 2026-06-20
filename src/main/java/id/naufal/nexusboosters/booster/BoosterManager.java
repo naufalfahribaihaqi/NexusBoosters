@@ -57,7 +57,7 @@ public class BoosterManager {
             long now = System.currentTimeMillis();
             long duration = token.getDurationOverrideSeconds() > 0 ? token.getDurationOverrideSeconds() : booster.getDurationSeconds();
             long expiresAt = now + (duration * 1000L);
-            ActiveBooster activeBooster = new ActiveBooster(token.getBoosterId(), player.getUniqueId(), token.getScope(), now, expiresAt);
+            ActiveBooster activeBooster = new ActiveBooster(token.getBoosterId(), player.getUniqueId(), token.getScope(), token.getMultiplierOverride(), now, expiresAt);
             activateBooster(activeBooster);
             plugin.getStorageService().saveActiveBooster(activeBooster);
             plugin.getStorageService().savePlayerData(data);
@@ -80,7 +80,8 @@ public class BoosterManager {
             if (!active.isExpired()) {
                 Booster booster = registry.getBooster(active.getBoosterId());
                 if (booster != null && booster.getType() == type) {
-                    multiplier += (booster.getMultiplier() - 1.0);
+                    double effectiveMult = active.getMultiplierOverride() > 0 ? active.getMultiplierOverride() : booster.getMultiplier();
+                    multiplier += (effectiveMult - 1.0);
                 }
             } else {
                 globalBoosters.remove(active.getBoosterId());
@@ -93,7 +94,8 @@ public class BoosterManager {
                 if (!active.isExpired()) {
                     Booster booster = registry.getBooster(active.getBoosterId());
                     if (booster != null && booster.getType() == type) {
-                        multiplier += (booster.getMultiplier() - 1.0);
+                        double effectiveMult = active.getMultiplierOverride() > 0 ? active.getMultiplierOverride() : booster.getMultiplier();
+                        multiplier += (effectiveMult - 1.0);
                     }
                 } else {
                     personal.remove(active.getBoosterId());
@@ -162,6 +164,7 @@ public class BoosterManager {
         if (base == null) return null;
         BoosterScope effectiveScope = token.getScope() != null ? token.getScope() : base.getScope();
         int effectiveDuration = token.getDurationOverrideSeconds() > 0 ? token.getDurationOverrideSeconds() : base.getDurationSeconds();
-        return new Booster(base.getId(), base.getDisplayName(), base.getType(), effectiveScope, base.getMultiplier(), effectiveDuration, base.getMaterial(), base.getPermission(), base.getRequiresHooks());
+        double effectiveMultiplier = token.getMultiplierOverride() > 0 ? token.getMultiplierOverride() : base.getMultiplier();
+        return new Booster(base.getId(), base.getDisplayName(), base.getType(), effectiveScope, effectiveMultiplier, effectiveDuration, base.getMaterial(), base.getPermission(), base.getRequiresHooks());
     }
 }

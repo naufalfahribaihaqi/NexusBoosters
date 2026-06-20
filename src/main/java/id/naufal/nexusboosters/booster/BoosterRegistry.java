@@ -46,7 +46,11 @@ public class BoosterRegistry {
     }
 
     public Booster getBooster(String id) {
-        return boosters.get(id);
+        Booster b = boosters.get(id);
+        if (b == null && LegacyIdMapper.isLegacyId(id)) {
+            b = boosters.get(LegacyIdMapper.resolveToNewId(id));
+        }
+        return b;
     }
 
     public Collection<Booster> getAllBoosters() {

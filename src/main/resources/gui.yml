@@ -56,3 +56,75 @@ confirm-menu:
 starter-boosters:
   enabled: false
   boosters: []
+
+admin-menu:
+  title: "&8Admin Menu"
+  size: 27
+  items:
+    active:
+      material: BEACON
+      name: "&bActive Boosters"
+      slot: 11
+      lore:
+        - "&7View and manage all active boosters"
+        - ""
+        - "&eClick to open!"
+    players:
+      material: PLAYER_HEAD
+      name: "&ePlayer Manager"
+      slot: 15
+      lore:
+        - "&7View online players and their boosters"
+        - ""
+        - "&eClick to open!"
+
+admin-active-menu:
+  title: "&8Admin - Active Boosters"
+  size: 54
+  items:
+    prev-page:
+      material: ARROW
+      name: "&ePrevious Page"
+      slot: 48
+    next-page:
+      material: ARROW
+      name: "&eNext Page"
+      slot: 50
+    back:
+      material: BARRIER
+      name: "&cBack"
+      slot: 49
+
+admin-player-menu:
+  title: "&8Admin - Players"
+  size: 54
+  items:
+    prev-page:
+      material: ARROW
+      name: "&ePrevious Page"
+      slot: 48
+    next-page:
+      material: ARROW
+      name: "&eNext Page"
+      slot: 50
+    back:
+      material: BARRIER
+      name: "&cBack"
+      slot: 49
+
+admin-player-booster-menu:
+  title: "&8Admin - {player}"
+  size: 54
+  items:
+    prev-page:
+      material: ARROW
+      name: "&ePrevious Page"
+      slot: 48
+    next-page:
+      material: ARROW
+      name: "&eNext Page"
+      slot: 50
+    back:
+      material: BARRIER
+      name: "&cBack"
+      slot: 49

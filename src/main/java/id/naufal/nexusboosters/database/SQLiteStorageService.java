@@ -5,6 +5,8 @@ import id.naufal.nexusboosters.booster.ActiveBooster;
 import id.naufal.nexusboosters.booster.BoosterScope;
 import id.naufal.nexusboosters.player.PlayerBoosterToken;
 import id.naufal.nexusboosters.player.PlayerData;
+import id.naufal.nexusboosters.booster.LegacyIdMapper;
+import id.naufal.nexusboosters.booster.LegacyIdMapper.LegacyMapping;
 
 import java.io.File;
 import java.sql.*;
@@ -46,6 +48,7 @@ public class SQLiteStorageService implements StorageService {
                     "expires_at BIGINT NOT NULL," +
                     "active BOOLEAN NOT NULL DEFAULT 1," +
                     "server_id VARCHAR(255) NOT NULL," +
+                    "multiplier_override DOUBLE DEFAULT -1.0," +
                     "updated_at BIGINT NOT NULL," +
                     "revision INTEGER NOT NULL DEFAULT 1" +
                     ");";
@@ -56,15 +59,17 @@ public class SQLiteStorageService implements StorageService {
                     "scope VARCHAR(50) NOT NULL," +
                     "amount INTEGER NOT NULL," +
                     "duration_override_seconds INTEGER," +
+                    "multiplier_override DOUBLE DEFAULT -1.0," +
                     "updated_at BIGINT NOT NULL," +
                     "revision INTEGER NOT NULL DEFAULT 1," +
-                    "PRIMARY KEY(player_uuid, booster_id, scope, duration_override_seconds)" +
+                    "PRIMARY KEY(player_uuid, booster_id, scope, duration_override_seconds, multiplier_override)" +
                     ");";
 
             try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
                 stmt.execute(createActiveBoostersTable);
                 stmt.execute(createPlayerBoostersTable);
                 migrateOldData(conn);
+                migrateV2Data(conn);
             } catch (SQLException e) {
                 plugin.getLogger().log(Level.SEVERE, "Failed to initialize SQLite database", e);
             }
@@ -137,6 +142,94 @@ public class SQLiteStorageService implements StorageService {
         }
     }
 
+    private void migrateV2Data(Connection conn) {
+        try {
+            boolean hasMultiplier = false;
+            try (ResultSet rs = conn.getMetaData().getColumns(null, null, "nexus_player_boosters", "multiplier_override")) {
+                if (rs.next()) hasMultiplier = true;
+            }
+            if (!hasMultiplier) {
+                plugin.getLogger().info("Migrating SQLite to V2 (adding multiplier_override and mapping legacy IDs)...");
+
+                File dbFile = new File(plugin.getDataFolder(), "database.db");
+                java.nio.file.Files.copy(dbFile.toPath(), new File(plugin.getDataFolder(), "database.db.backup").toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                
+                try (Statement stmt = conn.createStatement()) {
+                    stmt.execute("ALTER TABLE nexus_active_boosters ADD COLUMN multiplier_override DOUBLE DEFAULT -1.0");
+                    
+                    try (ResultSet rs = stmt.executeQuery("SELECT id, booster_id FROM nexus_active_boosters")) {
+                        String update = "UPDATE nexus_active_boosters SET booster_id = ?, multiplier_override = ?, scope = ? WHERE id = ?";
+                        try (PreparedStatement pstmt = conn.prepareStatement(update)) {
+                            while (rs.next()) {
+                                int rowId = rs.getInt("id");
+                                String boosterId = rs.getString("booster_id");
+                                if (LegacyIdMapper.isLegacyId(boosterId)) {
+                                    LegacyMapping mapping = LegacyIdMapper.getMapping(boosterId);
+                                    pstmt.setString(1, mapping.getNewId());
+                                    pstmt.setDouble(2, mapping.getOriginalMultiplier());
+                                    pstmt.setString(3, mapping.getOriginalScope().name());
+                                    pstmt.setInt(4, rowId);
+                                    pstmt.addBatch();
+                                    plugin.getLogger().info("Migrating active booster " + boosterId + " -> " + mapping.getNewId());
+                                }
+                            }
+                            pstmt.executeBatch();
+                        }
+                    }
+
+                    stmt.execute("ALTER TABLE nexus_player_boosters RENAME TO nexus_player_boosters_old");
+                    
+                    String createPlayerBoostersTable = "CREATE TABLE IF NOT EXISTS nexus_player_boosters (" +
+                            "player_uuid VARCHAR(36) NOT NULL," +
+                            "booster_id VARCHAR(255) NOT NULL," +
+                            "scope VARCHAR(50) NOT NULL," +
+                            "amount INTEGER NOT NULL," +
+                            "duration_override_seconds INTEGER," +
+                            "multiplier_override DOUBLE DEFAULT -1.0," +
+                            "updated_at BIGINT NOT NULL," +
+                            "revision INTEGER NOT NULL DEFAULT 1," +
+                            "PRIMARY KEY(player_uuid, booster_id, scope, duration_override_seconds, multiplier_override)" +
+                            ");";
+                    stmt.execute(createPlayerBoostersTable);
+                    
+                    try (ResultSet rs = stmt.executeQuery("SELECT * FROM nexus_player_boosters_old")) {
+                        String insert = "INSERT OR IGNORE INTO nexus_player_boosters (player_uuid, booster_id, scope, amount, duration_override_seconds, multiplier_override, updated_at, revision) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                        try (PreparedStatement pstmt = conn.prepareStatement(insert)) {
+                            while (rs.next()) {
+                                String boosterId = rs.getString("booster_id");
+                                String scopeStr = rs.getString("scope");
+                                double multiplierOverride = -1.0;
+                                
+                                if (LegacyIdMapper.isLegacyId(boosterId)) {
+                                    LegacyMapping mapping = LegacyIdMapper.getMapping(boosterId);
+                                    boosterId = mapping.getNewId();
+                                    scopeStr = mapping.getOriginalScope().name();
+                                    multiplierOverride = mapping.getOriginalMultiplier();
+                                    plugin.getLogger().info("Migrating player booster token " + rs.getString("booster_id") + " -> " + boosterId);
+                                }
+                                
+                                pstmt.setString(1, rs.getString("player_uuid"));
+                                pstmt.setString(2, boosterId);
+                                pstmt.setString(3, scopeStr);
+                                pstmt.setInt(4, rs.getInt("amount"));
+                                pstmt.setInt(5, rs.getInt("duration_override_seconds"));
+                                pstmt.setDouble(6, multiplierOverride);
+                                pstmt.setLong(7, rs.getLong("updated_at"));
+                                pstmt.setInt(8, rs.getInt("revision"));
+                                pstmt.addBatch();
+                            }
+                            pstmt.executeBatch();
+                        }
+                    }
+                    stmt.execute("DROP TABLE nexus_player_boosters_old");
+                    plugin.getLogger().info("SQLite V2 migration completed successfully.");
+                }
+            }
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.SEVERE, "Error during SQLite V2 migration", e);
+        }
+    }
+
     @Override
     public CompletableFuture<List<ActiveBooster>> loadActiveBoosters() {
         return CompletableFuture.supplyAsync(() -> {
@@ -154,8 +247,9 @@ public class SQLiteStorageService implements StorageService {
                     BoosterScope scope = BoosterScope.valueOf(rs.getString("scope"));
                     long startedAt = rs.getLong("started_at");
                     long expiresAt = rs.getLong("expires_at");
+                    double multiplierOverride = rs.getDouble("multiplier_override");
 
-                    ActiveBooster booster = new ActiveBooster(boosterId, ownerUuid, scope, startedAt, expiresAt);
+                    ActiveBooster booster = new ActiveBooster(boosterId, ownerUuid, scope, multiplierOverride, startedAt, expiresAt);
                     booster.setPaused(!rs.getBoolean("active"));
                     long rem = (expiresAt - System.currentTimeMillis()) / 1000;
                     booster.setRemainingSeconds(rem > 0 ? (int) rem : 0);
@@ -173,7 +267,7 @@ public class SQLiteStorageService implements StorageService {
     @Override
     public CompletableFuture<Void> saveActiveBooster(ActiveBooster booster) {
         return CompletableFuture.runAsync(() -> {
-            String insertQuery = "INSERT INTO nexus_active_boosters (booster_id, owner_uuid, scope, started_at, expires_at, active, server_id, updated_at, revision) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String insertQuery = "INSERT INTO nexus_active_boosters (booster_id, owner_uuid, scope, started_at, expires_at, active, server_id, multiplier_override, updated_at, revision) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             String disableQuery = "UPDATE nexus_active_boosters SET active = 0, updated_at = ? WHERE booster_id = ? AND scope = ? AND (owner_uuid = ? OR (owner_uuid IS NULL AND ? IS NULL)) AND active = 1";
 
             try (Connection conn = getConnection()) {
@@ -205,8 +299,9 @@ public class SQLiteStorageService implements StorageService {
                         insertStmt.setLong(5, booster.getExpiresAt());
                         insertStmt.setBoolean(6, true);
                         insertStmt.setString(7, plugin.getConfig().getString("cross-server.server-id", "local"));
-                        insertStmt.setLong(8, System.currentTimeMillis());
-                        insertStmt.setInt(9, 1);
+                        insertStmt.setDouble(8, booster.getMultiplierOverride());
+                        insertStmt.setLong(9, System.currentTimeMillis());
+                        insertStmt.setInt(10, 1);
                         insertStmt.executeUpdate();
                     }
                 }
@@ -246,7 +341,7 @@ public class SQLiteStorageService implements StorageService {
     public CompletableFuture<PlayerData> loadPlayerData(UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
             PlayerData data = new PlayerData(uuid);
-            String query = "SELECT booster_id, scope, amount, duration_override_seconds FROM nexus_player_boosters WHERE player_uuid = ?";
+            String query = "SELECT booster_id, scope, amount, duration_override_seconds, multiplier_override FROM nexus_player_boosters WHERE player_uuid = ?";
             
             try (Connection conn = getConnection();
                  PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -257,9 +352,10 @@ public class SQLiteStorageService implements StorageService {
                         String boosterId = rs.getString("booster_id");
                         BoosterScope scope = BoosterScope.valueOf(rs.getString("scope"));
                         int durationOverride = rs.getInt("duration_override_seconds");
+                        double multiplierOverride = rs.getDouble("multiplier_override");
                         int amount = rs.getInt("amount");
                         
-                        PlayerBoosterToken token = new PlayerBoosterToken(boosterId, scope, durationOverride);
+                        PlayerBoosterToken token = new PlayerBoosterToken(boosterId, scope, durationOverride, multiplierOverride);
                         data.setBoosterAmount(token, amount);
                     }
                 }
@@ -273,7 +369,7 @@ public class SQLiteStorageService implements StorageService {
     @Override
     public CompletableFuture<Void> savePlayerData(PlayerData data) {
         return CompletableFuture.runAsync(() -> {
-            String replaceQuery = "REPLACE INTO nexus_player_boosters (player_uuid, booster_id, scope, amount, duration_override_seconds, updated_at, revision) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String replaceQuery = "REPLACE INTO nexus_player_boosters (player_uuid, booster_id, scope, amount, duration_override_seconds, multiplier_override, updated_at, revision) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             
             try (Connection conn = getConnection()) {
                 conn.setAutoCommit(false);
@@ -290,8 +386,9 @@ public class SQLiteStorageService implements StorageService {
                         pstmt.setString(3, entry.getKey().getScope().name());
                         pstmt.setInt(4, entry.getValue());
                         pstmt.setInt(5, entry.getKey().getDurationOverrideSeconds());
-                        pstmt.setLong(6, System.currentTimeMillis());
-                        pstmt.setInt(7, 1);
+                        pstmt.setDouble(6, entry.getKey().getMultiplierOverride());
+                        pstmt.setLong(7, System.currentTimeMillis());
+                        pstmt.setInt(8, 1);
                         pstmt.addBatch();
                     }
                     pstmt.executeBatch();

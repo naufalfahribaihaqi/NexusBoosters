@@ -1,80 +1,49 @@
 boosters:
-  global_xp_3x:
-    display-name: "&bGlobal XP Surge &f(3x)"
+  xp:
+    display-name: "&bXP Booster"
     type: XP
     scope: GLOBAL
-    multiplier: 3.0
-    duration-seconds: 7200
+    multiplier: 2.0
+    duration-seconds: 3600
     material: EXPERIENCE_BOTTLE
-    permission: "nexusboosters.booster.global_xp_3x"
+    permission: "nexusboosters.booster.xp"
 
-  personal_xp_2x:
-    display-name: "&aPersonal XP Booster &f(2x)"
-    type: XP
-    scope: PERSONAL
-    multiplier: 2.0
-    duration-seconds: 3600
-    material: LAPIS_LAZULI
-    permission: "nexusboosters.booster.personal_xp_2x"
-
-  global_shop_sell_2x:
-    display-name: "&6Global Shop Sell Boost &f(2x)"
+  shop_sell:
+    display-name: "&6Shop Sell Booster"
     type: SHOP_SELL
     scope: GLOBAL
-    multiplier: 2.0
-    duration-seconds: 3600
-    material: GOLD_INGOT
-    permission: "nexusboosters.booster.global_shop_sell_2x"
-    requires-hooks:
-      - ShopGUIPlus
-
-  personal_shop_sell_150:
-    display-name: "&ePersonal Shop Sell Boost &f(+50%)"
-    type: SHOP_SELL
-    scope: PERSONAL
     multiplier: 1.5
     duration-seconds: 3600
-    material: GOLD_NUGGET
-    permission: "nexusboosters.booster.personal_shop_sell_150"
+    material: GOLD_INGOT
+    permission: "nexusboosters.booster.shop_sell"
     requires-hooks:
       - ShopGUIPlus
 
-  global_points_reward_2x:
-    display-name: "&dGlobal Points Reward Boost &f(2x)"
+  points_reward:
+    display-name: "&dPoints Reward Booster"
     type: PLAYERPOINTS_GAIN
     scope: GLOBAL
-    multiplier: 2.0
+    multiplier: 1.5
     duration-seconds: 3600
     material: AMETHYST_SHARD
-    permission: "nexusboosters.booster.global_points_reward_2x"
+    permission: "nexusboosters.booster.points_reward"
     requires-hooks:
       - PlayerPoints
 
-  personal_points_reward_2x:
-    display-name: "&dPersonal Points Reward Boost &f(2x)"
-    type: PLAYERPOINTS_GAIN
-    scope: PERSONAL
-    multiplier: 2.0
-    duration-seconds: 3600
-    material: AMETHYST_CLUSTER
-    permission: "nexusboosters.booster.personal_points_reward_2x"
-    requires-hooks:
-      - PlayerPoints
-
-  global_mobdrops_2x:
-    display-name: "&cGlobal Mob Drops Boost &f(2x)"
+  mob_drops:
+    display-name: "&cMob Drops Booster"
     type: MOB_DROPS
     scope: GLOBAL
-    multiplier: 2.0
+    multiplier: 1.5
     duration-seconds: 3600
     material: DIAMOND_SWORD
-    permission: "nexusboosters.booster.global_mobdrops_2x"
+    permission: "nexusboosters.booster.mob_drops"
 
-  personal_blockdrops_2x:
-    display-name: "&aPersonal Block Drops Boost &f(2x)"
+  block_drops:
+    display-name: "&aBlock Drops Booster"
     type: BLOCK_DROPS
-    scope: PERSONAL
-    multiplier: 2.0
+    scope: GLOBAL
+    multiplier: 1.5
     duration-seconds: 3600
     material: DIAMOND_PICKAXE
-    permission: "nexusboosters.booster.personal_blockdrops_2x"
+    permission: "nexusboosters.booster.block_drops"

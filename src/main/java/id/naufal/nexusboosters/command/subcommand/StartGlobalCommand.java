@@ -46,11 +46,20 @@ public class StartGlobalCommand implements SubCommand {
             return;
         }
 
-        String boosterId = args[0];
+        String originalBoosterArg = args[0];
+        String boosterId = originalBoosterArg;
         Booster booster = plugin.getBoosterRegistry().getBooster(boosterId);
         if (booster == null) {
             plugin.getMessageManager().sendMessage(sender, "invalid-booster", "booster", boosterId);
             return;
+        }
+
+        double multiplierOverride = -1.0;
+        if (id.naufal.nexusboosters.booster.LegacyIdMapper.isLegacyId(originalBoosterArg)) {
+            id.naufal.nexusboosters.booster.LegacyIdMapper.LegacyMapping mapping = id.naufal.nexusboosters.booster.LegacyIdMapper.getMapping(originalBoosterArg);
+            boosterId = mapping.getNewId();
+            multiplierOverride = mapping.getOriginalMultiplier();
+            plugin.getLogger().info("Mapped legacy command alias " + originalBoosterArg + " to " + boosterId);
         }
 
         if (booster.getScope() != BoosterScope.GLOBAL) {
@@ -71,7 +80,7 @@ public class StartGlobalCommand implements SubCommand {
 
         long now = System.currentTimeMillis();
         long expiresAt = now + (durationSeconds * 1000L);
-        ActiveBooster activeBooster = new ActiveBooster(boosterId, null, BoosterScope.GLOBAL, now, expiresAt);
+        ActiveBooster activeBooster = new ActiveBooster(boosterId, null, BoosterScope.GLOBAL, multiplierOverride, now, expiresAt);
         plugin.getBoosterManager().activateBooster(activeBooster);
         plugin.getStorageService().saveActiveBooster(activeBooster);
 

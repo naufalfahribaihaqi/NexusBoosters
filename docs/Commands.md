@@ -14,7 +14,7 @@ The main command is `/nexusboosters`, which can be aliased as `/nb` or `/booster
 | `/nb open` | Opens the Booster GUI. | `nexusboosters.use` | No |
 | `/nb active` | View currently active boosters. | `nexusboosters.use` | No |
 | `/nb activate <booster>` | Activate a booster by its ID. | `nexusboosters.use` | No |
-| `/nb give <player> <booster> <amount> [scope] [duration]` | Grants booster tokens. | `nexusboosters.give` | Yes |
+| `/nb give <player> <booster> <amount> [multiplier] [scope] [duration]` | Grants booster tokens. | `nexusboosters.give` | Yes |
 | `/nb startglobal <booster> [duration]` | Starts a global booster. | `nexusboosters.admin` | Yes |
 | `/nb stopglobal <booster>` | Stops an active global booster. | `nexusboosters.admin` | Yes |
 | `/nb sync` | Force database synchronization. | `nexusboosters.admin` | Yes |
@@ -24,7 +24,7 @@ The main command is `/nexusboosters`, which can be aliased as `/nb` or `/booster
 ## Example
 
 ```bash
-/nb give Steve weekend_xp 5 PERSONAL 7200
+/nb give Steve xp 5 2.5 PERSONAL 7200
 ```
 
 ---

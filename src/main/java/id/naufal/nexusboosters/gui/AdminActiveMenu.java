@@ -34,7 +34,9 @@ public class AdminActiveMenu implements NexusMenu {
             }
         }
 
-        this.inventory = Bukkit.createInventory(this, 54, TextUtil.color("&c&lAdmin - Active Boosters"));
+        String title = plugin.getGuiConfig().getConfig().getString("admin-active-menu.title", "&8Admin - Active Boosters");
+        int size = plugin.getGuiConfig().getConfig().getInt("admin-active-menu.size", 54);
+        this.inventory = Bukkit.createInventory(this, size, TextUtil.color(title));
         setupItems();
     }
 
@@ -79,13 +81,24 @@ public class AdminActiveMenu implements NexusMenu {
         }
 
         if (page > 0) {
-            inventory.setItem(48, new ItemBuilder(Material.ARROW).nameComponent(TextUtil.color("&ePrevious Page")).build());
+            setupNavItem("prev-page", 48, Material.ARROW);
         }
         if (startIndex + 45 < activeBoosters.size()) {
-            inventory.setItem(50, new ItemBuilder(Material.ARROW).nameComponent(TextUtil.color("&eNext Page")).build());
+            setupNavItem("next-page", 50, Material.ARROW);
         }
 
-        inventory.setItem(49, new ItemBuilder(Material.BARRIER).nameComponent(TextUtil.color("&cBack")).build());
+        setupNavItem("back", 49, Material.BARRIER);
+    }
+
+    private void setupNavItem(String key, int defaultSlot, Material defaultMat) {
+        String path = "admin-active-menu.items." + key + ".";
+        Material mat = Material.matchMaterial(plugin.getGuiConfig().getConfig().getString(path + "material", defaultMat.name()));
+        if (mat == null) mat = defaultMat;
+
+        int slot = plugin.getGuiConfig().getConfig().getInt(path + "slot", defaultSlot);
+        String name = plugin.getGuiConfig().getConfig().getString(path + "name", "&e" + key);
+
+        inventory.setItem(slot, new ItemBuilder(mat).nameComponent(TextUtil.color(name)).build());
     }
 
     @Override
@@ -97,11 +110,11 @@ public class AdminActiveMenu implements NexusMenu {
     public void onClick(InventoryClickEvent event) {
         int slot = event.getSlot();
 
-        if (slot == 49) {
+        if (slot == plugin.getGuiConfig().getConfig().getInt("admin-active-menu.items.back.slot", 49)) {
             plugin.getGuiService().openAdminMenu(player);
-        } else if (slot == 48 && page > 0) {
+        } else if (slot == plugin.getGuiConfig().getConfig().getInt("admin-active-menu.items.prev-page.slot", 48) && page > 0) {
             plugin.getGuiService().openAdminActiveMenu(player, page - 1);
-        } else if (slot == 50 && (page + 1) * 45 < activeBoosters.size()) {
+        } else if (slot == plugin.getGuiConfig().getConfig().getInt("admin-active-menu.items.next-page.slot", 50) && (page + 1) * 45 < activeBoosters.size()) {
             plugin.getGuiService().openAdminActiveMenu(player, page + 1);
         } else if (slot >= 0 && slot < 45) {
             int index = (page * 45) + slot;
