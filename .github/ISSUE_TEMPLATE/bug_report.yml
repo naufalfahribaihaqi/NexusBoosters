@@ -1,0 +1,100 @@
+name: Bug Report
+description: Create a report to help us improve NexusBoosters
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+        Please fill out all the fields below.
+  - type: input
+    id: plugin-version
+    attributes:
+      label: NexusBoosters Version
+      description: What version of NexusBoosters are you using? (Check with `/nexusboosters version`)
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: paper-version
+    attributes:
+      label: Paper Version
+      description: What version of Paper are you using? (Check with `/version`)
+      placeholder: "1.21.1-R0.1-SNAPSHOT"
+    validations:
+      required: true
+  - type: input
+    id: java-version
+    attributes:
+      label: Java Version
+      description: What version of Java are you running?
+      placeholder: "Java 21"
+    validations:
+      required: true
+  - type: input
+    id: server-software
+    attributes:
+      label: Server Software
+      description: Are you using Paper, Purpur, or another fork?
+      placeholder: "Paper"
+    validations:
+      required: true
+  - type: dropdown
+    id: database-type
+    attributes:
+      label: Database Type
+      options:
+        - SQLite
+        - MySQL
+    validations:
+      required: true
+  - type: input
+    id: installed-hooks
+    attributes:
+      label: Installed Hooks
+      description: Which supported plugins do you have installed? (Vault, PlaceholderAPI, Floodgate, PlayerPoints, ShopGUIPlus)
+      placeholder: "Vault, PlaceholderAPI"
+    validations:
+      required: false
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Reproduction Steps
+      description: How can we reproduce this bug?
+      value: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+  - type: textarea
+    id: stack-trace
+    attributes:
+      label: Stack Trace
+      description: If there is an error in the console, please paste it here. Use a pastebin if it's too long.
+      render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: relevant-configuration
+    attributes:
+      label: Relevant Configuration
+      description: Paste any relevant sections of your configuration files (e.g. `config.yml`, `boosters.yml`).
+      render: yaml
+    validations:
+      required: false
