@@ -1,0 +1,55 @@
+# NexusBoosters Configuration
+storage:
+  type: sqlite
+  mysql:
+    host: localhost
+    port: 3306
+    database: nexusboosters
+    username: root
+    password: ""
+
+booster:
+  expiry-check-interval-seconds: 30
+  stacking: HIGHEST_ONLY
+  allow-global-and-personal-stack: true
+
+hooks:
+  vault: true
+  placeholderapi: true
+  floodgate: true
+
+bossbar:
+  enabled: true
+  update-interval-ticks: 20
+  mode: ROTATE
+  rotate-interval-seconds: 5
+  color:
+    GLOBAL: BLUE
+    PERSONAL: GREEN
+    PLAYERPOINTS: PURPLE
+    SHOP: YELLOW
+  style: SEGMENTED_10
+  title-format: "&b%booster_name% &7| &f%scope% &7| &a%multiplier%x &7| &e%time_left%"
+
+shopgui:
+  enabled: true
+  apply-to-all-shops: false
+  allowed-shops:
+    - blocks
+    - farming
+    - mining
+  blocked-shops: []
+  buy-discount-cap-percent: 30
+  sell-boost-cap-multiplier: 3.0
+
+gui-debug: false
+
+text-format: LEGACY
+
+cross-server:
+  enabled: false
+  server-id: "server-1"
+  sync-interval-seconds: 5
+  global-boosters: true
+  player-balances: true
+  bossbar-sync: true

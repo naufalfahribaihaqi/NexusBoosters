@@ -1,0 +1,28 @@
+name: NexusBoosters
+version: "1.0.0"
+main: id.naufal.nexusboosters.NexusBoostersPlugin
+api-version: "1.21"
+authors: [naufal]
+description: A production-ready, all-in-one Minecraft booster plugin.
+dependencies:
+  server:
+    Vault:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    floodgate:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    PlayerPoints:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    ShopGUIPlus:
+      load: BEFORE
+      required: false
+      join-classpath: true

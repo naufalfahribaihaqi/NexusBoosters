@@ -1,0 +1,44 @@
+# NexusBoosters Messages
+prefix: "&8[&bNexusBoosters&8] "
+
+# General
+no-permission: "&cYou do not have permission to use this."
+not-player: "&cOnly players can use this command."
+console-no-gui: "&cConsole cannot open GUI menus."
+invalid-booster: "&cUnknown booster: &f{booster}&c."
+player-not-found: "&cPlayer '{player}' not found."
+
+# Activation
+activate-success: "&aActivated &f{booster_name}&a!"
+activate-fail-no-balance: "&cYou do not own this booster."
+booster-no-balance: "&cYou do not own this booster."
+booster-unavailable: "&cThis booster is currently unavailable."
+booster-not-global: "&cBooster &f{booster}&c is not a global booster."
+booster-already-active: "&cThis booster is already active."
+booster-expired: "&c{booster_name} has expired."
+booster-global-started: "&b{booster_name} &ais now active for everyone for &e{duration}&a!"
+booster-missing-hooks: "&cThis booster is currently unavailable."
+
+# Commands
+reload-success: "&aConfiguration reloaded."
+give-success: "&aGave &e{amount}x &f{booster_name} &ato &f{player} &aas &b{type} &afor &e{duration}&a."
+receive-booster: "&aYou received &e{amount}x &f{booster_name} &aas &b{type} &afor &e{duration}&a!"
+admin-message: "&aNexusBoosters Admin Menu (WIP)"
+
+# Active boosters
+active-header: "&8&m--------------------------------\n&b&lActive Boosters\n&8&m--------------------------------"
+active-entry: "&7- &b{booster} &8(&7{scope}&8): &a{time} remaining"
+active-none: "&cNo active boosters."
+
+# Admin and Setup
+invalid-duration: "&cInvalid duration format. Use: 30s, 1h, etc."
+invalid-type: "&cInvalid scope/type. Use GLOBAL or PERSONAL."
+invalid-amount: "&cAmount must be a positive number."
+global-booster-stopped: "&cGlobal booster &f{booster_name} &cwas stopped."
+startglobal-success: "&b{booster_name} &ais now active globally for &e{duration}&a!"
+stopglobal-all-disabled: "&cStopping all global boosters is disabled. Please specify a booster ID."
+no-active-global-booster: "&cThere is no active global booster with ID &f{booster}&c."
+sync-started: "&eStarting manual cross-server sync..."
+sync-complete: "&aCross-server sync completed successfully."
+sync-disabled: "&cCross-server sync is disabled in config."
+mysql-required-for-cross-server: "&cMySQL storage is required for cross-server sync."

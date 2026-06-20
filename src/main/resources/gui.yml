@@ -1,0 +1,58 @@
+booster-menu:
+  title: "&8Booster Menu"
+  size: 54
+  items:
+    next-page:
+      material: ARROW
+      name: "&eNext Page"
+      slot: 50
+    prev-page:
+      material: ARROW
+      name: "&ePrevious Page"
+      slot: 48
+    active-boosters:
+      material: BEACON
+      name: "&bActive Boosters"
+      slot: 49
+    close:
+      material: BARRIER
+      name: "&cClose Menu"
+      slot: 53
+
+  show-unowned-boosters: false
+
+active-menu:
+  title: "&8Active Boosters"
+  size: 54
+  items:
+    back:
+      material: ARROW
+      name: "&eBack"
+      slot: 49
+    close:
+      material: BARRIER
+      name: "&cClose Menu"
+      slot: 53
+
+confirm-menu:
+  title: "&8Confirm Activation?"
+  size: 27
+  items:
+    confirm:
+      material: LIME_DYE
+      name: "&aConfirm"
+      slot: 11
+      lore:
+        - "&7Click to activate the booster."
+    cancel:
+      material: RED_DYE
+      name: "&cCancel"
+      slot: 15
+      lore:
+        - "&7Click to cancel."
+    info:
+      slot: 13
+
+starter-boosters:
+  enabled: false
+  boosters: []
