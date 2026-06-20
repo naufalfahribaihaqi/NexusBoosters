@@ -1,0 +1,17 @@
+# NexusBoosters Wiki
+
+- [Home](Home)
+- [Installation](Installation)
+- [Quick Start](Quick-Start)
+- [Booster Configuration](Booster-Configuration)
+- [Booster Types](Booster-Types)
+- [Commands](Commands)
+- [Permissions](Permissions)
+- [GUI Configuration](GUI-Configuration)
+- [Messages](Messages)
+- [Database](Database)
+- [Cross-Server Setup](Cross-Server-Setup)
+- [Integrations](Integrations)
+- [Placeholders](Placeholders)
+- [Troubleshooting](Troubleshooting)
+- [Developer Guide](Developer-Guide)
